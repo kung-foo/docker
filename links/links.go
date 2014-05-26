@@ -6,6 +6,7 @@ import (
 	"github.com/dotcloud/docker/nat"
 	"path"
 	"strings"
+	"regexp"
 )
 
 type Link struct {
@@ -49,7 +50,9 @@ func (l *Link) Alias() string {
 
 func (l *Link) ToEnv() []string {
 	env := []string{}
+	re := regexp.MustCompile(`[\-]`)
 	alias := strings.ToUpper(l.Alias())
+	alias = re.ReplaceAllString(alias, "_")
 
 	if p := l.getDefaultPort(); p != nil {
 		env = append(env, fmt.Sprintf("%s_PORT=%s://%s:%s", alias, p.Proto(), l.ChildIP, p.Port()))
